@@ -20,7 +20,7 @@ app.use(Router);
 
 createConnection()
   .then(async (_connection) => {
-    const server = app.listen(8000, () => {
+    const server = app.listen(process.env.PORT || 8000, () => {
       console.log("Service gestion de tâche up 🚀");
     });
     module.exports = server;

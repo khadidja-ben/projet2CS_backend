@@ -68,7 +68,21 @@ export async function getTasks(_req: Request, res: Response) {
     const tasks = await Task.find({
       relations: ["usedEquipments", "taskModel", "taskModel.steps"],
     });
-    console.log(tasks);
+    tasks.map((item: any) => {
+      item.steps = item.taskModel.steps;
+      delete item.taskModel;
+      return item;
+    });
+    /* 
+    tasks.map((item) => {
+      console.log(item.taskModel.steps);
+    }); */
+
+    // const steps = tasks.taskModel.steps;
+    /* tasks.map((item) => {
+      const steps = item.taskModel.steps;
+      item.steps = steps;
+    }); */
     return res.json(tasks);
   } catch (err) {
     console.log(err);
@@ -84,7 +98,7 @@ export async function updateTaskState(req: Request, res: Response) {
       relations: ["usedEquipments", "taskModel", "taskModel.steps"],
       where: {
         uuid: id,
-      }, 
+      },
     });
     task.idTaskState = req.body.idTaskState;
     await task.save();
