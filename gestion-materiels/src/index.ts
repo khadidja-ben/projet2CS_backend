@@ -22,7 +22,7 @@ app.use(Router);
 
 createConnection()
   .then(async (_connection: Connection) => {
-    const server = app.listen(process.env.PORT || 8080, () => {
+    app.listen(process.env.PORT || 8080, () => {
       console.log(
         `🚀 Materials Up --> 🏠 LocalHost:${
           process.env.PORT || 8080

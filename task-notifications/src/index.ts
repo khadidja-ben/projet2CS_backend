@@ -18,16 +18,16 @@ import { Connection, createConnection } from "typeorm";
 import * as swaggerUi from "swagger-ui-express";
 import * as swaggerDocument from "../swagger.json";
 import * as express from "express";
-import { json } from "express";
+import { json, urlencoded } from "express";
 import * as cors from "cors";
 import * as morgan from "morgan";
 import Router from "./routes";
 
+
 const app: express.Application = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
 
 app.use(json());
+app.use(urlencoded({extended: true}))
 app.use(cors());
 app.use(morgan("dev"));
 
@@ -36,24 +36,17 @@ app.use("/notifDoc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(Router);
 
-const PORT = 8000;
 
-// start server and socket event listener
+
+
+const PORT = process.env.PORT || 8083;
+
 createConnection()
   .then(async (_connection: Connection) => {
-    const server = app.listen(process.env.PORT || 8080, () => {
-      console.log( `🚀 Task Notifications --> 🏠 LocalHost:${
-        process.env.PORT || 8080
-      } || 🐳 Docker:8002 `
+    app.listen(PORT, () => {
+      console.log(
+        `🚀 Task Notifications --> 🏠 LocalHost:${PORT} || 🐳 Docker:8002 `
       );
-
-      /* io.on("connection", (socket: any) => {
-      socket.on("messageSent", (message: any) => {
-      socket.broadcast.emit("messageSent", message);
-      });
-    }); */
-
     });
-    module.exports = server;
   })
   .catch((error) => console.log(error));
