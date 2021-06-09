@@ -185,7 +185,14 @@ export async function getTaskByAgentId(req: Request, res: Response) {
       .where("task.idAgent = :id", { id: id })
       .leftJoinAndSelect("task.usedEquipments", "usedEquipments")
       .leftJoinAndSelect("task.taskModel", "taskModel")
+      .leftJoinAndSelect("taskModel.steps", "Steps")
       .getMany();
+    
+    tasks.map((item: any) => {
+      item.steps = item.taskModel.steps;
+      delete item.taskModel;
+      return item;
+    });
 
     return res.send(tasks);
   } catch (err) {
