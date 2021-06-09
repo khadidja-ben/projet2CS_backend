@@ -39,15 +39,21 @@ app.use(Router);
 const PORT = 8000;
 
 // start server and socket event listener
-http.listen(PORT, () => {
-  console.log(
-    `🚀 Task Notifications --> 🏠 LocalHost:${
-      process.env.PORT || 8080
-    } || 🐳 Docker:8002 `
-  );
-  /* io.on("connection", (socket: any) => {
-    socket.on("messageSent", (message: any) => {
+createConnection()
+  .then(async (_connection: Connection) => {
+    const server = app.listen(process.env.PORT || 8080, () => {
+      console.log( `🚀 Task Notifications --> 🏠 LocalHost:${
+        process.env.PORT || 8080
+      } || 🐳 Docker:8002 `
+      );
+
+      /* io.on("connection", (socket: any) => {
+      socket.on("messageSent", (message: any) => {
       socket.broadcast.emit("messageSent", message);
+      });
+    }); */
+
     });
-  }); */
-});
+    module.exports = server;
+  })
+  .catch((error) => console.log(error));
