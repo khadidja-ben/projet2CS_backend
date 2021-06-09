@@ -3,7 +3,7 @@ import { getManager } from "typeorm";
 import { read } from "node:fs";
 import { Task } from "../entity/Task";
 import { TaskModel } from "../entity/TaskModel";
-const https = require("https");
+var axios = require("axios");
 
 /**
  * Welcome endpoint for task management service.
@@ -52,35 +52,28 @@ export const addTask = async (req: Request, res: Response) => {
 
     await task.save();
 
-    const data = JSON.stringify({
+    var data = JSON.stringify({
       title: "Notification d'une tâche",
       body: "Vous avez une nouvelle notification : " + taskTitle,
     });
 
-    const options = {
-      hostname: "localhost:8083",
-      path: "/fcm",
-      method: "POST",
+    var config = {
+      method: "post",
+      url: "http://localhost:8083/fcm",
       headers: {
         "Content-Type": "application/json",
-        "Content-Length": data.length,
       },
+      data: data,
     };
 
-    const req = https.request(options, (res: any) => {
-      console.log(`statusCode: ${res.statusCode}`);
-
-      res.on("data", (d: any) => {
-        process.stdout.write(d);
+    axios(config)
+      .then((response: any) => {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error: any) {
+        console.log(error);
       });
-    });
 
-    req.on("error", (error: any) => {
-      console.error(error);
-    });
-
-    req.write(data);
-    req.end();
     return res.send(task);
   } catch (err) {
     console.log(err);
