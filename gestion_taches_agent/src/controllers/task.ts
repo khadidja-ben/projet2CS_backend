@@ -3,6 +3,8 @@ import { getManager } from "typeorm";
 import { read } from "node:fs";
 import { Task } from "../entity/Task";
 import { TaskModel } from "../entity/TaskModel";
+import { Rental } from "../entity/Rental"; 
+import { VehicleState } from "../entity/VehicleState";
 var axios = require("axios");
 
 /**
@@ -128,14 +130,25 @@ export async function updateTaskState(req: Request, res: Response) {
     });
     task.idTaskState = req.body.idTaskState;
     await task.save();
-    if ((task.idTaskState = 0)) {
+    if ((task.idTaskState = 1)) {
       msg = "tache n'est pas affecté";
     }
-    if ((task.idTaskState = 1)) {
+    if ((task.idTaskState = 2)) {
       msg = "La tâche est en cours";
     }
-    if ((task.idTaskState = 2)) {
+    if ((task.idTaskState = 3)) {
       msg = "La tâche a été terminé";
+      //change vidange inside the table vehicle state 
+      if (task.taskModel.id = 2){  // task vidange
+        const idVehicule = task.idVehicle; 
+        const rental = await Rental.find({
+          idVehicle : idVehicule,
+          rentalstate : "active"
+        })
+        const vehicle = await VehicleState.findOneOrFail({idRental:rental[rental.length-1].idRental})
+        vehicle.vidange = vehicle.vidange + 10000
+        await vehicle.save()
+      }
     }
 
     return res.json(msg);
