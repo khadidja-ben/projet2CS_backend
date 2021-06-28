@@ -119,6 +119,7 @@ export async function getTasks(_req: Request, res: Response) {
 export async function updateTaskState(req: Request, res: Response) {
   const id = req.params.id;
   try {
+    let msg = "";
     const task = await Task.findOneOrFail({
       relations: ["usedEquipments", "taskModel", "taskModel.steps"],
       where: {
@@ -127,7 +128,17 @@ export async function updateTaskState(req: Request, res: Response) {
     });
     task.idTaskState = req.body.idTaskState;
     await task.save();
-    return res.json(task);
+    if ((task.idTaskState = 0)) {
+      msg = "tache n'est pas affecté";
+    }
+    if ((task.idTaskState = 1)) {
+      msg = "La tâche est en cours";
+    }
+    if ((task.idTaskState = 2)) {
+      msg = "La tâche a été terminé";
+    }
+
+    return res.json(msg);
   } catch (err) {
     console.log(err);
     return res.status(500).json(err);
